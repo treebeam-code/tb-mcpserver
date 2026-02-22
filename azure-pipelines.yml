@@ -1,0 +1,72 @@
+trigger:
+  tags:
+    include:
+    - 'v*'
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  githubRepo: 'github.com/treebeam-code/tb-mcpserver.git'
+
+steps:
+  - checkout: self
+    fetchDepth: 0
+    persistCredentials: true
+
+  - task: Bash@3
+    displayName: 'Verify tag matches package.json version'
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+        TAG=$(echo "$(Build.SourceBranch)" | sed 's|refs/tags/||')
+        PKG_VERSION="v$(node -p "require('./package.json').version")"
+        echo "Git tag: $TAG"
+        echo "package.json version: $PKG_VERSION"
+        if [ "$TAG" != "$PKG_VERSION" ]; then
+          echo "##vso[task.logissue type=error]Tag $TAG does not match package.json version $PKG_VERSION"
+          exit 1
+        fi
+
+  - task: Bash@3
+    displayName: 'Squash and push to GitHub'
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+
+        # Get the tag that triggered this build
+        TAG=$(echo "$(Build.SourceBranch)" | sed 's|refs/tags/||')
+        echo "Publishing tag: $TAG"
+
+        # Set identity for commit-tree
+        git config user.email "admin@treebeam.com"
+        git config user.name "TreeBeam CI"
+
+        # Add GitHub remote
+        git remote add github "https://$(githubPAT)@$(githubRepo)"
+
+        # Fetch the current GitHub master (if it exists) so we can build on it
+        git fetch github master 2>/dev/null || true
+
+        # Create a squashed commit from the current tree
+        # This keeps only the code snapshot, not internal commit history
+        TREE=$(git log -1 --format='%T' HEAD)
+
+        if git rev-parse github/master >/dev/null 2>&1; then
+          PARENT=$(git rev-parse github/master)
+          COMMIT=$(git commit-tree "$TREE" -p "$PARENT" -m "Release $TAG")
+        else
+          echo "No existing GitHub master — creating initial commit"
+          COMMIT=$(git commit-tree "$TREE" -m "Release $TAG")
+        fi
+
+        # Push the squashed commit as master and apply the tag
+        git push github "$COMMIT:refs/heads/master"
+        git tag -f "$TAG" "$COMMIT"
+        git push github "refs/tags/$TAG" --force
+
+        echo "Successfully published $TAG to GitHub (squashed)"
+    env:
+      githubPAT: $(githubPAT)

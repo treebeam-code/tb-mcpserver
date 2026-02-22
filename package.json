@@ -1,0 +1,47 @@
+{
+    "name": "@treebeam/mcp",
+    "version": "0.8.0",
+    "description": "TreeBeam MCP server for accounting and financial management",
+    "license": "Apache-2.0",
+    "author": "TNS Solutions, Inc.",
+    "homepage": "https://www.treebeam.com",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/treebeam-code/tb-mcpserver.git"
+    },
+    "bugs": {
+        "url": "https://github.com/treebeam-code/tb-mcpserver/issues"
+    },
+    "keywords": [
+        "treebeam",
+        "mcp",
+        "model-context-protocol",
+        "accounting"
+    ],
+    "main": "src/index.js",
+    "type": "module",
+    "bin": {
+        "treebeam-mcp": "src/index.js"
+    },
+    "files": [
+        "src",
+        "LICENSE"
+    ],
+    "engines": {
+        "node": ">=18"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "scripts": {
+        "start": "node src/index.js",
+        "login": "node src/index.js login",
+        "logout": "node src/index.js logout",
+        "status": "node src/index.js status"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.0",
+        "keytar": "^7.9.0",
+        "open": "^10.1.0"
+    }
+}
