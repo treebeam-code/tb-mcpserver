@@ -19,8 +19,13 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest
+
       - run: npm ci
 
-      - run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ''
+      - name: Publish with OIDC trusted publisher
+        run: |
+          # Remove any .npmrc that might interfere with OIDC auth
+          rm -f .npmrc ~/.npmrc
+          npm publish --provenance --access public
