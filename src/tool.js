@@ -2,7 +2,8 @@
 export const tools = [
     {
         name: 'treebeam_login',
-        description: 'Start device flow authentication for TreeBeam. Returns a URL and code for the user to complete in their browser. The server polls for the token in the background automatically. ALWAYS display the entire output message from this tool to the user in your instructions.',
+        description:
+            'Start device flow authentication for TreeBeam. Returns a URL and code for the user to complete in their browser. The server polls for the token in the background automatically. ALWAYS display the entire output message from this tool to the user in your instructions.',
         inputSchema: {
             type: 'object',
             properties: {},
@@ -20,7 +21,8 @@ export const tools = [
     },
     {
         name: 'treebeam_auth_status',
-        description: 'Check current TreeBeam authentication status — whether a valid token is stored and when it expires. If the user is not authenticated, log them in with the treebeam_login tool before using other tools that would require authentication.',
+        description:
+            'Check current TreeBeam authentication status — whether a valid token is stored and when it expires. If the user is not authenticated, log them in with the treebeam_login tool before using other tools that would require authentication.',
         inputSchema: {
             type: 'object',
             properties: {},
@@ -677,7 +679,7 @@ export const tools = [
                 },
                 currencyCode: {
                     type: 'string',
-                    description: 'Currency code (e.g. USD)'
+                    description: 'Currency code (e.g. usd, eur, gbp) all lowercase'
                 },
                 ordinal: {
                     type: 'integer',
@@ -707,6 +709,14 @@ export const tools = [
                     type: 'string',
                     description: 'Period name'
                 },
+                number: {
+                    type: 'string',
+                    description: 'Period number or code'
+                },
+                description: {
+                    type: 'string',
+                    description: 'Period description'
+                },
                 startDate: {
                     type: 'string',
                     format: 'date',
@@ -716,6 +726,10 @@ export const tools = [
                     type: 'string',
                     format: 'date',
                     description: 'Period end date (YYYY-MM-DD)'
+                },
+                currencyCode: {
+                    type: 'string',
+                    description: 'Currency code (e.g. usd, eur, gbp) all lowercase'
                 }
             },
             required: ['collectionId', 'id']
@@ -1241,206 +1255,4 @@ export const tools = [
             required: ['collectionId', 'id', 'etag']
         }
     }
-    // {
-    //     name: 'get_trial_balance',
-    //     description: 'Retrieve complete trial balance for a project/period with accounts, unadjusted balances, adjustment totals, and adjusted balances.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             periodId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The accounting period ID'
-    //             },
-    //             includeZeroBalances: {
-    //                 type: 'boolean',
-    //                 description: 'Include accounts with zero balances (default: false)',
-    //                 default: false
-    //             }
-    //         },
-    //         required: ['projectId', 'periodId']
-    //     }
-    // },
-    // {
-    //     name: 'list_adjustments',
-    //     description: 'List adjustments (journal entries) with line item details for a project, optionally filtered by period or adjustment type.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             periodId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'Optional period ID to filter adjustments'
-    //             },
-    //             adjustmentTypeId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'Optional adjustment type ID to filter (e.g., PAJE, TAJE)'
-    //             }
-    //         },
-    //         required: ['projectId']
-    //     }
-    // },
-    // {
-    //     name: 'create_adjustment',
-    //     description: 'Create a new adjustment (journal entry) with line items. Validates that debits equal credits and the period is not locked.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             periodId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The accounting period ID'
-    //             },
-    //             adjustmentTypeId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The adjustment type ID'
-    //             },
-    //             name: {
-    //                 type: 'string',
-    //                 description: 'Name/title of the adjustment'
-    //             },
-    //             description: {
-    //                 type: 'string',
-    //                 description: 'Detailed description of the adjustment'
-    //             },
-    //             lineItems: {
-    //                 type: 'array',
-    //                 description: 'Line items for the journal entry (debits must equal credits)',
-    //                 items: {
-    //                     type: 'object',
-    //                     properties: {
-    //                         accountId: {
-    //                             type: 'string',
-    //                             format: 'uuid',
-    //                             description: 'The account ID'
-    //                         },
-    //                         debit: {
-    //                             type: 'number',
-    //                             description: 'Debit amount (use 0 if credit)',
-    //                             minimum: 0
-    //                         },
-    //                         credit: {
-    //                             type: 'number',
-    //                             description: 'Credit amount (use 0 if debit)',
-    //                             minimum: 0
-    //                         },
-    //                         memo: {
-    //                             type: 'string',
-    //                             description: 'Optional memo for this line item'
-    //                         }
-    //                     },
-    //                     required: ['accountId', 'debit', 'credit']
-    //                 },
-    //                 minItems: 2
-    //             }
-    //         },
-    //         required: ['projectId', 'periodId', 'adjustmentTypeId', 'name', 'lineItems']
-    //     }
-    // },
-    // {
-    //     name: 'get_chart_of_accounts',
-    //     description: 'Retrieve the full chart of accounts organized by entity and account group.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             entityId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'Optional entity ID to filter accounts'
-    //             }
-    //         },
-    //         required: ['projectId']
-    //     }
-    // },
-    // {
-    //     name: 'get_entity_structure',
-    //     description: 'Retrieve entity ownership/consolidation hierarchy with ownership percentages.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             entityRelationshipSetId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'Optional relationship set ID (uses default if not specified)'
-    //             }
-    //         },
-    //         required: ['projectId']
-    //     }
-    // },
-    // {
-    //     name: 'get_period_summary',
-    //     description: 'Get summary statistics for an accounting period including account counts, totals by type, and lock status.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             periodId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The accounting period ID'
-    //             }
-    //         },
-    //         required: ['projectId', 'periodId']
-    //     }
-    // },
-    // {
-    //     name: 'search_accounts',
-    //     description: 'Search accounts by name, number, or description with optional filters by entity or account group.',
-    //     inputSchema: {
-    //         type: 'object',
-    //         properties: {
-    //             projectId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'The project ID'
-    //             },
-    //             query: {
-    //                 type: 'string',
-    //                 description: 'Search query (matches account name, number, or description)'
-    //             },
-    //             entityId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'Optional entity ID to filter results'
-    //             },
-    //             accountGroupId: {
-    //                 type: 'string',
-    //                 format: 'uuid',
-    //                 description: 'Optional account group ID to filter results'
-    //             }
-    //         },
-    //         required: ['projectId', 'query']
-    //     }
-    // }
 ];

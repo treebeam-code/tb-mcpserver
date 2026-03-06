@@ -31,11 +31,11 @@ export const SLOW_DOWN_INCREMENT_S = 5;
 
 // API tool routing
 export const TOOL_NAME_TO_ENDPOINT_MAP = {
-    list_projects:         { endpoint: 'c',                    method: 'GET', pathParams: [],     queryParams: ['o'], payload: [] },
-    list_organizations:    { endpoint: 'o',                    method: 'GET', pathParams: [],     queryParams: [],    payload: [] },
+    list_projects: { endpoint: 'c', method: 'GET', pathParams: [], queryParams: ['o'], payload: [] },
+    list_organizations: { endpoint: 'o', method: 'GET', pathParams: [], queryParams: [], payload: [] },
     // Adjustment Types (GET only)
-    list_adjustment_types: { endpoint: 'adjustmentTypes',      method: 'GET', pathParams: [],     queryParams: [],    payload: [] },
-    get_adjustment_type:   { endpoint: 'adjustmentTypes/{id}', method: 'GET', pathParams: ['id'], queryParams: [],    payload: [] },
+    list_adjustment_types: { endpoint: 'adjustmentTypes', method: 'GET', pathParams: [], queryParams: [], payload: [] },
+    get_adjustment_type: { endpoint: 'adjustmentTypes/{id}', method: 'GET', pathParams: ['id'], queryParams: [], payload: [] },
     search_entities: { endpoint: 'c/{collectionId}/entities', method: 'GET', pathParams: ['collectionId'], queryParams: ['since', 'includeDeprecatedItems'], payload: [] },
     get_entity: { endpoint: 'c/{collectionId}/entities/{id}', method: 'GET', pathParams: ['collectionId', 'id'], queryParams: [], payload: [] },
     create_entity: { endpoint: 'c/{collectionId}/entities', method: 'POST', pathParams: ['collectionId'], queryParams: [], payload: ['collectionId', 'number', 'name', 'description', 'isDeprecated'] },
@@ -119,14 +119,14 @@ export const TOOL_NAME_TO_ENDPOINT_MAP = {
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['collectionId', 'number', 'name', 'startDate', 'endDate', 'currencyCode', 'ordinal']
+        payload: ['collectionId', 'number', 'name', 'description', 'startDate', 'endDate', 'currencyCode', 'ordinal']
     },
     update_period: {
         endpoint: 'c/{collectionId}/periods/{id}',
         method: 'POST',
         pathParams: ['collectionId', 'id'],
         queryParams: [],
-        payload: ['collectionId', 'name', 'startDate', 'endDate'],
+        payload: ['collectionId', 'name', 'number', 'description', 'startDate', 'endDate', 'currencyCode'],
         merge: true
     },
     delete_period: { endpoint: 'c/{collectionId}/periods/{id}', method: 'DELETE', pathParams: ['collectionId', 'id'], queryParams: [], payload: [] },
@@ -176,16 +176,35 @@ export const TOOL_NAME_TO_ENDPOINT_MAP = {
         method: 'POST',
         pathParams: ['collectionId', 'id'],
         queryParams: [],
-        payload: ['collectionId', 'name', 'description', 'lineItems'],
+        payload: ['collectionId', 'name', 'number', 'description', 'lineItems'],
         merge: true
     },
     delete_adjustment: { endpoint: 'c/{collectionId}/adjustments/{id}', method: 'DELETE', pathParams: ['collectionId', 'id'], queryParams: [], payload: [] },
     // Adjustment Line Items
-    search_adjustment_line_items:  { endpoint: 'c/{collectionId}/adjustmentlineitems',      method: 'GET',    pathParams: ['collectionId'],       queryParams: ['adjustmentId', 'accountId', 'minAmount', 'maxAmount'],                payload: [] },
-    get_adjustment_line_item:      { endpoint: 'c/{collectionId}/adjustmentlineitems/{id}', method: 'GET',    pathParams: ['collectionId', 'id'], queryParams: [],                                                                     payload: [] },
-    create_adjustment_line_item:   { endpoint: 'c/{collectionId}/adjustmentlineitems',      method: 'POST',   pathParams: ['collectionId'],       queryParams: [],                                                                     payload: ['collectionId', 'adjustmentId', 'accountId', 'amount', 'description', 'reference', 'ordinal'] },
-    update_adjustment_line_item:   { endpoint: 'c/{collectionId}/adjustmentlineitems/{id}', method: 'POST',   pathParams: ['collectionId', 'id'], queryParams: [],                                                                     payload: ['collectionId', 'amount', 'description', 'reference', 'ordinal'],          merge: true },
-    delete_adjustment_line_item:   { endpoint: 'c/{collectionId}/adjustmentlineitems/{id}', method: 'DELETE', pathParams: ['collectionId', 'id'], queryParams: [],                                                                     payload: [] }
+    search_adjustment_line_items: {
+        endpoint: 'c/{collectionId}/adjustmentlineitems',
+        method: 'GET',
+        pathParams: ['collectionId'],
+        queryParams: ['adjustmentId', 'accountId', 'minAmount', 'maxAmount'],
+        payload: []
+    },
+    get_adjustment_line_item: { endpoint: 'c/{collectionId}/adjustmentlineitems/{id}', method: 'GET', pathParams: ['collectionId', 'id'], queryParams: [], payload: [] },
+    create_adjustment_line_item: {
+        endpoint: 'c/{collectionId}/adjustmentlineitems',
+        method: 'POST',
+        pathParams: ['collectionId'],
+        queryParams: [],
+        payload: ['collectionId', 'adjustmentId', 'accountId', 'amount', 'description', 'reference', 'ordinal']
+    },
+    update_adjustment_line_item: {
+        endpoint: 'c/{collectionId}/adjustmentlineitems/{id}',
+        method: 'POST',
+        pathParams: ['collectionId', 'id'],
+        queryParams: [],
+        payload: ['collectionId', 'amount', 'description', 'reference', 'ordinal'],
+        merge: true
+    },
+    delete_adjustment_line_item: { endpoint: 'c/{collectionId}/adjustmentlineitems/{id}', method: 'DELETE', pathParams: ['collectionId', 'id'], queryParams: [], payload: [] }
 };
 
 export const accountGroupTypes = [
