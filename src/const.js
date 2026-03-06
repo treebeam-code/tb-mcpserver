@@ -10,10 +10,9 @@ export const SERVER_VERSION = pkg.version;
 export const SERVICE_NAME = 'treebeam-mcp';
 export const ACCOUNT_NAME = 'default';
 
-// Endpoints
-//export const IDENTITY_URL = 'https://localhost:7180';
-export const IDENTITY_URL = 'https://dev.identity.treebeam.com';
-export const TREEBEAM_API = 'https://dev.api.treebeam.com';
+// Endpoints (configurable via environment variables)
+export const IDENTITY_URL = process.env.TREEBEAM_IDENTITY_URL || 'https://identity.treebeam.com';
+export const API_URL = process.env.TREEBEAM_API_URL || 'https://api.treebeam.com';
 
 // OAuth
 export const CLIENT_ID = 'fa8b447f-5db0-4c8b-912c-22d616a7a72c';

@@ -5,7 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { getToken, getAuthStatus, login, logout, startDeviceLogin } from './auth.js';
 import { tools } from './tool.js';
-import { SERVER_NAME, SERVER_VERSION, TREEBEAM_API, TOOL_NAME_TO_ENDPOINT_MAP, LOG_PREFIX } from './const.js';
+import { SERVER_NAME, SERVER_VERSION, API_URL, TOOL_NAME_TO_ENDPOINT_MAP, LOG_PREFIX } from './const.js';
 
 // Handle CLI commands (login, logout, status)
 const command = process.argv[2];
@@ -146,7 +146,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             }
         }
         const queryString = params.toString() ? '?' + params.toString() : '';
-        const apiUrl = `${TREEBEAM_API}/api/v1/${endpoint}${queryString}`;
+        const apiUrl = `${API_URL}/api/v1/${endpoint}${queryString}`;
 
         // Dispatch to appropriate fetch helper
         let response;

@@ -98,7 +98,7 @@ Once connected, the following tools are available to your AI assistant. Here are
 | `list_organizations` | List all accounting organizations you have access to |
 | `list_projects` | List all projects, optionally filtered by organization ID |
 
-The server provides **48 tools** in total covering full CRUD operations for entities, accounts, account groups, periods, unadjusted balances, adjustments, adjustment line items, and entity relationship sets. Each resource supports `search_*`, `get_*`, `create_*`, `update_*`, and `delete_*` operations. See [`src/tool.js`](src/tool.js) for the complete list.
+The server provides **47 tools** in total covering full CRUD operations for entities, accounts, account groups, periods, unadjusted balances, adjustments, adjustment line items, and entity relationship sets. Each resource supports `search_*`, `get_*`, `create_*`, `update_*`, and `delete_*` operations. See [`src/tool.js`](src/tool.js) for the complete list.
 
 Authentication is handled automatically — if your token expires during a session, the server initiates re-authentication via device flow.
 
