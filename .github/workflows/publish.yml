@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write  # Required for creating GitHub Releases
       id-token: write  # Required for OIDC trusted publisher + provenance
 
     steps:
@@ -29,3 +29,8 @@ jobs:
           # Remove any .npmrc that might interfere with OIDC auth
           rm -f .npmrc ~/.npmrc
           npm publish --provenance --access public
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${{ github.ref_name }}" --generate-notes
