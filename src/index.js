@@ -27,15 +27,16 @@ if (command === 'login') {
 
 // Fetch helpers
 
-async function fetchGet(url, token) {
+async function fetchGet(url, token, continuationToken) {
     console.error(`${LOG_PREFIX} API GET ${url}`);
-    return fetch(url, {
-        method: 'GET',
-        headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-        }
-    });
+    const headers = {
+        Authorization: `Bearer ${token}`,
+        'Content-Type': 'application/json'
+    };
+    if (continuationToken) {
+        headers['tns-continuation-token'] = continuationToken;
+    }
+    return fetch(url, { method: 'GET', headers });
 }
 
 async function fetchPost(url, token, body, merge = false) {
@@ -161,7 +162,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         } else if (method === 'DELETE') {
             response = await fetchDelete(apiUrl, token, args?.etag);
         } else {
-            response = await fetchGet(apiUrl, token);
+            response = await fetchGet(apiUrl, token, args?.continuationToken);
         }
 
         console.error(`${LOG_PREFIX} API response: ${response.status} ${response.statusText}`);
@@ -206,6 +207,10 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         }
 
         const result = await response.json();
+        const nextContinuationToken = response.headers.get('tns-continuation-token');
+        if (nextContinuationToken) {
+            return { content: [{ type: 'text', text: JSON.stringify({ ...result, continuationToken: nextContinuationToken }, null, 2) }] };
+        }
         return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);

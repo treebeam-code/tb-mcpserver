@@ -31,16 +31,21 @@ export const tools = [
     },
     {
         name: 'list_organizations',
-        description: 'List all accounting organizations accessible to the user',
+        description: 'List all accounting organizations accessible to the user. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
+                }
+            },
             required: []
         }
     },
     {
         name: 'list_projects',
-        description: 'List all accounting projects accessible to the user, optionally filtered by organization.',
+        description: 'List all accounting projects accessible to the user, optionally filtered by organization. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -48,6 +53,10 @@ export const tools = [
                     type: 'string',
                     format: 'uuid',
                     description: 'Optional organization ID to filter projects.'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: []
@@ -56,10 +65,15 @@ export const tools = [
     // --- Adjustment Types (GET only — write operations are admin-only) ---
     {
         name: 'list_adjustment_types',
-        description: 'List all available adjustment types (e.g. PAJE, TAJE). These are global reference values not scoped to a project.',
+        description: 'List all available adjustment types (e.g. PAJE, TAJE). These are global reference values not scoped to a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
-            properties: {},
+            properties: {
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
+                }
+            },
             required: []
         }
     },
@@ -80,7 +94,7 @@ export const tools = [
     },
     {
         name: 'search_entities',
-        description: 'List or search entities within a project, optionally filtered by modification date.',
+        description: 'List or search entities within a project, optionally filtered by modification date. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -98,6 +112,10 @@ export const tools = [
                     type: 'boolean',
                     description: 'Include deprecated entities (default: false)',
                     default: false
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -218,7 +236,7 @@ export const tools = [
     // --- Account Groups ---
     {
         name: 'search_account_groups',
-        description: 'Search/list account groups within a project.',
+        description: 'Search/list account groups within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -230,6 +248,10 @@ export const tools = [
                 accountGroupTypeCode: {
                     type: 'string',
                     description: 'Filter by account group type code'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -345,7 +367,7 @@ export const tools = [
     // --- Entity Relationship Sets ---
     {
         name: 'search_entity_relationship_sets',
-        description: 'Search/list entity relationship sets within a project.',
+        description: 'Search/list entity relationship sets within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -353,6 +375,10 @@ export const tools = [
                     type: 'string',
                     format: 'uuid',
                     description: 'The project ID'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -456,7 +482,7 @@ export const tools = [
     // --- Accounts ---
     {
         name: 'search_accounts',
-        description: 'Search/list accounts within a project.',
+        description: 'Search/list accounts within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -474,6 +500,10 @@ export const tools = [
                     type: 'string',
                     format: 'uuid',
                     description: 'Filter by account group ID'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -533,7 +563,7 @@ export const tools = [
                     description: 'Account description'
                 }
             },
-            required: ['collectionId', 'entityId', 'accountGroupId', 'name']
+            required: ['collectionId', 'number', 'name']
         }
     },
     {
@@ -595,7 +625,7 @@ export const tools = [
     // --- Periods ---
     {
         name: 'search_periods',
-        description: 'Search/list accounting periods within a project.',
+        description: 'Search/list accounting periods within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -623,6 +653,10 @@ export const tools = [
                     type: 'string',
                     format: 'date',
                     description: 'Filter periods with endDate on or before this date'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -762,7 +796,7 @@ export const tools = [
     // --- Unadjusted Balances ---
     {
         name: 'search_unadjusted_balances',
-        description: 'Search/list unadjusted balances within a project.',
+        description: 'Search/list unadjusted balances within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -793,6 +827,10 @@ export const tools = [
                 maxAmount: {
                     type: 'number',
                     description: 'Filter balances with amount less than or equal to this value'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -898,7 +936,7 @@ export const tools = [
     // --- Adjustments ---
     {
         name: 'search_adjustments',
-        description: 'Search/list adjustments within a project.',
+        description: 'Search/list adjustments within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -923,6 +961,10 @@ export const tools = [
                 maxAmount: {
                     type: 'number',
                     description: 'Filter adjustments with total amount less than or equal to this value'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']
@@ -1103,7 +1145,7 @@ export const tools = [
     // --- Adjustment Line Items ---
     {
         name: 'search_adjustment_line_items',
-        description: 'Search/list adjustment line items within a project.',
+        description: 'Search/list adjustment line items within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1129,6 +1171,10 @@ export const tools = [
                 maxAmount: {
                     type: 'number',
                     description: 'Filter line items with amount less than or equal to this value'
+                },
+                continuationToken: {
+                    type: 'string',
+                    description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
                 }
             },
             required: ['collectionId']

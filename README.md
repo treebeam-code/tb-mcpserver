@@ -4,8 +4,12 @@ MCP (Model Context Protocol) server for [TreeBeam](https://www.treebeam.com) —
 
 ## Prerequisites
 
-- **Node.js** 18 or later
+- **Node.js** 18 or later — [How to install Node.js](docs/Install-Node.md)
+- **Git** _(only needed if installing from source)_ — [How to install Git](docs/Install-Git.md)
+- **Claude Code** _(if using as your AI assistant)_ — [How to install Claude Code](docs/Install-Claude-Code.md)
 - A **TreeBeam account** — sign up at [treebeam.com](https://www.treebeam.com)
+
+> New to these tools? Each link above has a plain-English guide walking you through installation step by step.
 
 ## Installation
 
