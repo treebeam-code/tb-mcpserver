@@ -1,36 +1,36 @@
 name: Publish to npm
 
 on:
-  push:
-    tags:
-      - 'v*'
+    push:
+        tags:
+            - 'v*'
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write  # Required for creating GitHub Releases
-      id-token: write  # Required for OIDC trusted publisher + provenance
+    publish:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # Required for creating GitHub Releases
+            id-token: write # Required for OIDC trusted publisher + provenance
 
-    steps:
-      - uses: actions/checkout@v4
+        steps:
+            - uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '22'
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: '22'
 
-      - name: Upgrade npm for OIDC support
-        run: npm install -g npm@latest
+            # - name: Upgrade npm for OIDC support
+            #   run: npm install -g npm@latest
 
-      - run: npm ci
+            - run: npm ci
 
-      - name: Publish with OIDC trusted publisher
-        run: |
-          # Remove any .npmrc that might interfere with OIDC auth
-          rm -f .npmrc ~/.npmrc
-          npm publish --provenance --access public
+            - name: Publish with OIDC trusted publisher
+              run: |
+                  # Remove any .npmrc that might interfere with OIDC auth
+                  rm -f .npmrc ~/.npmrc
+                  npm publish --provenance --access public
 
-      - name: Create GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release create "${{ github.ref_name }}" --generate-notes
+            - name: Create GitHub Release
+              env:
+                  GH_TOKEN: ${{ github.token }}
+              run: gh release create "${{ github.ref_name }}" --generate-notes
