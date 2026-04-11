@@ -1,6 +1,6 @@
 {
     "name": "@treebeam/mcp",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "TreeBeam MCP server for accounting and financial management",
     "license": "Apache-2.0",
     "author": "TNS Solutions, Inc.",
