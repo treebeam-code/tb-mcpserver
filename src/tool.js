@@ -236,7 +236,7 @@ export const tools = [
     // --- Account Groups ---
     {
         name: 'search_account_groups',
-        description: 'Search/list account groups within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw account group records within a project. Use this tool to look up a specific subset of account groups by type. DO NOT use this tool to build financial summaries by account group — use the pivot_trial_balance_by_account_group or pivot_trial_balance_by_fs_group tools instead, which return pre-aggregated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -482,7 +482,7 @@ export const tools = [
     // --- Accounts ---
     {
         name: 'search_accounts',
-        description: 'Search/list accounts within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw account records within a project. Use this tool to look up a specific subset of accounts by entity or account group. DO NOT use this tool to build trial balances or financial summaries — use the pivot_trial_balance_* tools instead, which return account-level balances pre-calculated in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -796,7 +796,7 @@ export const tools = [
     // --- Unadjusted Balances ---
     {
         name: 'search_unadjusted_balances',
-        description: 'Search/list unadjusted balances within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw unadjusted balance records within a project. Use this tool to look up a specific subset of balance records by period, entity, account, or amount range. DO NOT use this tool to calculate trial balances or summarize financial data — use the pivot_trial_balance_* tools instead, which return pre-calculated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -936,7 +936,7 @@ export const tools = [
     // --- Adjustments ---
     {
         name: 'search_adjustments',
-        description: 'Search/list adjustments within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw adjustment records within a project. Use this tool to look up a specific subset of adjustments by period, type, or amount range. DO NOT use this tool to summarize or analyze adjustment data across periods or accounts — use the pivot_adjustments_* tools instead, which return pre-aggregated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1145,7 +1145,7 @@ export const tools = [
     // --- Adjustment Line Items ---
     {
         name: 'search_adjustment_line_items',
-        description: 'Search/list adjustment line items within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw adjustment line item records within a project. Use this tool to look up a specific subset of line items by adjustment, account, or amount range. DO NOT use this tool to analyze adjustment activity across accounts or periods — use the pivot_adjustments_* tools instead, which return pre-joined and pre-aggregated data in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1299,6 +1299,358 @@ export const tools = [
                 }
             },
             required: ['collectionId', 'id', 'etag']
+        }
+    },
+    // --- Pivot Tools ---
+    // These tools return pre-calculated, pre-aggregated data in a single response with NO pagination.
+    // PREFER these tools over search_* tools whenever the user asks about balances, totals, summaries,
+    // trial balances, financial statements, or any analytical/reporting question.
+    //
+    // Workflow: Use search_periods to find period IDs, then pass them to the pivot tool.
+    // Optionally use search_entities to find entity IDs if you need to scope to specific entities.
+    // Use list_adjustment_types if you need to filter by adjustment type.
+
+    // --- Pivot: Trial Balance ---
+    {
+        name: 'pivot_trial_balance_by_account',
+        description:
+            'PREFERRED for financial data retrieval. Returns a trial balance pivoted by account — one row per account with the unadjusted balance, total adjustments, and adjusted balance for each requested period. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about account balances, trial balances, or financial position at the account level. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include in the pivot. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter unadjusted balances and adjustments to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    {
+        name: 'pivot_trial_balance_by_account_group',
+        description:
+            'PREFERRED for financial data retrieval. Returns a trial balance pivoted by account group — one row per account group with amounts summed across all accounts in that group, for each requested period. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about balances or totals grouped by account group (e.g. "Cash and Cash Equivalents", "Accounts Payable"). You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include in the pivot. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter unadjusted balances and adjustments to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    {
+        name: 'pivot_trial_balance_by_fs_group',
+        description:
+            'PREFERRED for high-level financial summaries. Returns a trial balance pivoted by financial statement group — one row per financial statement type (Asset, Liability, Equity, Revenue, Expense) with amounts summed across all account groups of that type, for each requested period. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about high-level financial position, total assets vs liabilities, or financial statement summaries. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include in the pivot. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter unadjusted balances and adjustments to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    // --- Pivot: Adjustments ---
+    {
+        name: 'pivot_adjustments_by_adjustment',
+        description:
+            'PREFERRED for reviewing adjustments. Returns each adjustment with its line items pre-joined, including the resolved account name and account number on each line item. All data is returned in a single response with NO pagination. Use this tool whenever the user asks to see adjustments with their detail line items, or needs to review journal entries. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                adjustmentStatus: {
+                    type: 'string',
+                    description: 'Reserved for future use.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    {
+        name: 'pivot_adjustments_by_account',
+        description:
+            'PREFERRED for analyzing adjustment impact by account. Returns one row per impacted account with the sum of adjustment line item amounts and count of distinct adjustments, for each requested period. Only accounts that have adjustment activity are included. All data is returned in a single response with NO pagination. Use this tool whenever the user asks which accounts were adjusted, or how much adjustment activity hit a particular account. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                adjustmentStatus: {
+                    type: 'string',
+                    description: 'Reserved for future use.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    {
+        name: 'pivot_adjustments_by_account_group',
+        description:
+            'PREFERRED for analyzing adjustment impact by account group. Returns one row per impacted account group with summed adjustment amounts and distinct adjustment counts, for each requested period. Only account groups that have adjustment activity are included. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about adjustment totals grouped by account group. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                adjustmentStatus: {
+                    type: 'string',
+                    description: 'Reserved for future use.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    {
+        name: 'pivot_adjustments_by_fs_group',
+        description:
+            'PREFERRED for high-level adjustment analysis. Returns one row per impacted financial statement type (Asset, Liability, Equity, Revenue, Expense) with summed adjustment amounts and distinct adjustment counts, for each requested period. Only financial statement types that have adjustment activity are included. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about adjustment impact at the financial statement level. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope results to specific entities. If omitted, all entities in the project are included.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                adjustmentStatus: {
+                    type: 'string',
+                    description: 'Reserved for future use.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    // --- Pivot: Consolidation ---
+    {
+        name: 'pivot_consolidation_by_account_group',
+        description:
+            'PREFERRED for multi-entity consolidated reporting. Returns a consolidated trial balance by account group — one row per account group with totals summed across all included entities, plus a per-entity breakdown showing each entity\'s contribution to the row totals. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about consolidated balances, cross-entity totals, or needs to compare entities side by side at the account group level. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope to specific entities for consolidation. If omitted, all entities in the project are consolidated.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter unadjusted balances and adjustments to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
+        }
+    },
+    {
+        name: 'pivot_consolidation_by_fs_group',
+        description:
+            'PREFERRED for high-level multi-entity consolidated reporting. Returns a consolidated trial balance by financial statement group — one row per financial statement type (Asset, Liability, Equity, Revenue, Expense) with totals summed across all included entities, plus a per-entity breakdown. All data is returned in a single response with NO pagination. Use this tool whenever the user asks about consolidated financial position at the highest level, or needs a summary across all entities by financial statement type. You must provide at least one periodId — use search_periods first to find period IDs if needed.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                collectionId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The project ID'
+                },
+                periodIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'One or more period IDs to include. Required. Use search_periods to find period IDs.'
+                },
+                entityIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Scope to specific entities for consolidation. If omitted, all entities in the project are consolidated.'
+                },
+                interimPeriodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'Optional. Filter unadjusted balances and adjustments to a specific interim period.'
+                },
+                adjustmentTypeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                }
+            },
+            required: ['collectionId', 'periodIds']
         }
     }
 ];
