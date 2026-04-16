@@ -1505,6 +1505,21 @@ export const tools = [
                     type: 'array',
                     items: { type: 'string' },
                     description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
+                },
+                accountGroupIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account group IDs.'
+                },
+                accountIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account IDs.'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1541,6 +1556,16 @@ export const tools = [
                     type: 'array',
                     items: { type: 'string' },
                     description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
+                },
+                accountGroupIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account group IDs.'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1577,6 +1602,11 @@ export const tools = [
                     type: 'array',
                     items: { type: 'string' },
                     description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1618,6 +1648,11 @@ export const tools = [
                 adjustmentStatus: {
                     type: 'string',
                     description: 'Reserved for future use.'
+                },
+                adjustmentIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific adjustment IDs.'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1658,6 +1693,21 @@ export const tools = [
                 adjustmentStatus: {
                     type: 'string',
                     description: 'Reserved for future use.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
+                },
+                accountGroupIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account group IDs.'
+                },
+                accountIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account IDs.'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1698,6 +1748,16 @@ export const tools = [
                 adjustmentStatus: {
                     type: 'string',
                     description: 'Reserved for future use.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
+                },
+                accountGroupIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account group IDs.'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1738,6 +1798,11 @@ export const tools = [
                 adjustmentStatus: {
                     type: 'string',
                     description: 'Reserved for future use.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1775,6 +1840,16 @@ export const tools = [
                     type: 'array',
                     items: { type: 'string' },
                     description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
+                },
+                accountGroupIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific account group IDs.'
                 }
             },
             required: ['collectionId', 'periodIds']
@@ -1811,6 +1886,11 @@ export const tools = [
                     type: 'array',
                     items: { type: 'string' },
                     description: 'Optional. Explicit list of adjustment type IDs to include. If omitted, all types except "passed" are included. Use list_adjustment_types to find valid IDs.'
+                },
+                fsGroupCodes: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Optional. Filter to specific financial statement groups: a (asset), l (liability), q (equity), r (revenue), x (expense).'
                 }
             },
             required: ['collectionId', 'periodIds']

@@ -210,21 +210,21 @@ export const TOOL_NAME_TO_ENDPOINT_MAP = {
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'fsGroupCodes', 'accountGroupIds', 'accountIds']
     },
     pivot_trial_balance_by_account_group: {
         endpoint: 'c/{collectionId}/pivot/trialbalance/byaccountgroup',
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'fsGroupCodes', 'accountGroupIds']
     },
     pivot_trial_balance_by_fs_group: {
         endpoint: 'c/{collectionId}/pivot/trialbalance/byfsgroup',
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'fsGroupCodes']
     },
     // Pivot – Adjustments
     pivot_adjustments_by_adjustment: {
@@ -232,28 +232,28 @@ export const TOOL_NAME_TO_ENDPOINT_MAP = {
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus', 'adjustmentIds']
     },
     pivot_adjustments_by_account: {
         endpoint: 'c/{collectionId}/pivot/adjustments/byaccount',
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus', 'fsGroupCodes', 'accountGroupIds', 'accountIds']
     },
     pivot_adjustments_by_account_group: {
         endpoint: 'c/{collectionId}/pivot/adjustments/byaccountgroup',
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus', 'fsGroupCodes', 'accountGroupIds']
     },
     pivot_adjustments_by_fs_group: {
         endpoint: 'c/{collectionId}/pivot/adjustments/byfsgroup',
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'adjustmentStatus', 'fsGroupCodes']
     },
     // Pivot – Consolidation
     pivot_consolidation_by_account_group: {
@@ -261,14 +261,14 @@ export const TOOL_NAME_TO_ENDPOINT_MAP = {
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'fsGroupCodes', 'accountGroupIds']
     },
     pivot_consolidation_by_fs_group: {
         endpoint: 'c/{collectionId}/pivot/consolidation/byfsgroup',
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds']
+        payload: ['periodIds', 'entityIds', 'interimPeriodId', 'adjustmentTypeIds', 'fsGroupCodes']
     }
 };
 
