@@ -2,7 +2,7 @@
   "openapi": "3.0.1",
   "info": {
     "title": "TreeBeam API",
-    "description": "Deployment v8.8.0-alpha.11",
+    "description": "Deployment v8.9.0-alpha.12",
     "version": "1.0"
   },
   "paths": {
@@ -3280,18 +3280,29 @@
         "tags": [
           "Project Custom Team Roles"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "filter",
+            "in": "query",
+            "description": "Query string filter parameters. Each property on the filter corresponds to a filterable field.",
+            "schema": {
+              "$ref": "#/components/schemas/TbTeamRoleProjectCustomTnsEmptyFilter"
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -3300,6 +3311,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -3307,6 +3319,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -4572,18 +4585,54 @@
         "tags": [
           "Entities"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "Name",
+            "in": "query",
+            "description": "Entity name. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Number",
+            "in": "query",
+            "description": "Entity number/code. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Description",
+            "in": "query",
+            "description": "Entity description. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -4592,6 +4641,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -4599,6 +4649,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -5118,18 +5169,29 @@
         "tags": [
           "Entity Relationship Sets"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "filter",
+            "in": "query",
+            "description": "Query string filter parameters. Each property on the filter corresponds to a filterable field.",
+            "schema": {
+              "$ref": "#/components/schemas/TbEntityRelationshipSetTnsEmptyFilter"
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -5138,6 +5200,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -5145,6 +5208,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -5664,18 +5728,29 @@
         "tags": [
           "Entity Relationship Diagrams"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "filter",
+            "in": "query",
+            "description": "Query string filter parameters. Each property on the filter corresponds to a filterable field.",
+            "schema": {
+              "$ref": "#/components/schemas/TbEntityRelationshipDiagramTnsEmptyFilter"
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -5684,6 +5759,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -5691,6 +5767,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -6210,18 +6287,65 @@
         "tags": [
           "Account Groups"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "Name",
+            "in": "query",
+            "description": "Account group name. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Number",
+            "in": "query",
+            "description": "Account group number/code. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Description",
+            "in": "query",
+            "description": "Account group description. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "AccountGroupTypeCode",
+            "in": "query",
+            "description": "Account group type code. Values: a (asset), l (liability), q (equity), r (revenue), x (expense). Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -6230,6 +6354,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -6237,6 +6362,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -6756,18 +6882,76 @@
         "tags": [
           "Accounts"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "Name",
+            "in": "query",
+            "description": "Account name. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Number",
+            "in": "query",
+            "description": "Account number/code. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Description",
+            "in": "query",
+            "description": "Account description. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "AccountGroupId",
+            "in": "query",
+            "description": "Account group ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "EntityId",
+            "in": "query",
+            "description": "Entity ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -6776,6 +6960,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -6783,6 +6968,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -7302,18 +7488,98 @@
         "tags": [
           "Periods"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "Name",
+            "in": "query",
+            "description": "Period name. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Number",
+            "in": "query",
+            "description": "Period number/code. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Description",
+            "in": "query",
+            "description": "Period description. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "IsLocked",
+            "in": "query",
+            "description": "Whether the period is locked. Default operator: [eq]. Supports: [eq]. Values: true, false.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "CurrencyCode",
+            "in": "query",
+            "description": "Currency code (e.g. USD, EUR). Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "StartDate",
+            "in": "query",
+            "description": "Period start date in yyyy-MM-dd format. Default operator: [eq]. Supports: [eq], [gt], [lt], [ge], [le].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "EndDate",
+            "in": "query",
+            "description": "Period end date in yyyy-MM-dd format. Default operator: [eq]. Supports: [eq], [gt], [lt], [ge], [le].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -7322,6 +7588,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -7329,6 +7596,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -7848,18 +8116,65 @@
         "tags": [
           "Unadjusted Balances"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "AccountId",
+            "in": "query",
+            "description": "Account ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "PeriodId",
+            "in": "query",
+            "description": "Period ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "InterimPeriodId",
+            "in": "query",
+            "description": "Interim period ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Amount",
+            "in": "query",
+            "description": "Balance amount. Default operator: [eq]. Supports: [eq], [gt], [lt], [ge], [le]. Repeated keys are ANDed for range queries.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -7868,6 +8183,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -7875,6 +8191,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -8394,18 +8711,120 @@
         "tags": [
           "Adjustments"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "Name",
+            "in": "query",
+            "description": "Adjustment name. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Number",
+            "in": "query",
+            "description": "Adjustment number/code. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Description",
+            "in": "query",
+            "description": "Adjustment description. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "PeriodId",
+            "in": "query",
+            "description": "Period ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "InterimPeriodId",
+            "in": "query",
+            "description": "Interim period ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "AdjustmentTypeId",
+            "in": "query",
+            "description": "Adjustment type ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "AdjustmentStatus",
+            "in": "query",
+            "description": "Adjustment status (e.g. draft, posted). Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Reference",
+            "in": "query",
+            "description": "Reference text. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "IsPreparedByClient",
+            "in": "query",
+            "description": "Whether the adjustment was prepared by the client. Default operator: [eq]. Supports: [eq]. Values: true, false.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -8414,6 +8833,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -8421,6 +8841,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -8940,18 +9361,76 @@
         "tags": [
           "Adjustment Line Items"
         ],
+        "summary": "List records with optional field-level filtering. Filter values use bracket-prefixed operator syntax.\r\n            \r\nOperators: [eq] (exact match), [contains] (case-insensitive substring, strings only),\r\n[gt], [lt], [ge], [le] (comparisons, numbers only).\r\n            \r\nBare values (no operator) use a default: [contains] for text fields, [eq] for IDs/numbers/booleans.\r\n            \r\nCombine filters: different properties are ANDed. Repeated keys are ANDed (e.g. amount=[gt]1000&amount=[lt]5000).\r\nMultiple operator-value pairs in one key are ORed (e.g. name=[contains]Cash[contains]Bank).\r\n            \r\nInvalid syntax returns 400 — bad filters never silently return unfiltered results.",
         "parameters": [
           {
             "name": "collectionId",
             "in": "path",
+            "description": "The project (collection) ID.",
             "required": true,
             "schema": {
               "type": "string"
             }
           },
           {
+            "name": "AdjustmentId",
+            "in": "query",
+            "description": "Adjustment ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "AccountId",
+            "in": "query",
+            "description": "Account ID. Default operator: [eq]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Description",
+            "in": "query",
+            "description": "Line item description. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Reference",
+            "in": "query",
+            "description": "Reference text. Default operator: [contains]. Supports: [eq], [contains].",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
+            "name": "Amount",
+            "in": "query",
+            "description": "Line item amount. Default operator: [eq]. Supports: [eq], [gt], [lt], [ge], [le]. Repeated keys are ANDed for range queries.",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          {
             "name": "since",
             "in": "query",
+            "description": "Optional. Only return records modified after this timestamp.",
             "schema": {
               "type": "string",
               "format": "date-time"
@@ -8960,6 +9439,7 @@
           {
             "name": "tns-continuation-token",
             "in": "header",
+            "description": "Pagination token from a previous response. Pass to retrieve the next page.",
             "schema": {
               "type": "string"
             }
@@ -8967,6 +9447,7 @@
           {
             "name": "includeDeprecatedItems",
             "in": "query",
+            "description": "Include archived/deprecated records. Defaults to false.",
             "schema": {
               "type": "boolean",
               "default": false
@@ -14371,6 +14852,10 @@
         },
         "additionalProperties": false
       },
+      "TbEntityRelationshipDiagramTnsEmptyFilter": {
+        "type": "object",
+        "additionalProperties": false
+      },
       "TbEntityRelationshipSet": {
         "type": "object",
         "properties": {
@@ -14447,6 +14932,10 @@
             "format": "int32"
           }
         },
+        "additionalProperties": false
+      },
+      "TbEntityRelationshipSetTnsEmptyFilter": {
+        "type": "object",
         "additionalProperties": false
       },
       "TbInterimPeriod": {
@@ -15186,6 +15675,10 @@
             "format": "int32"
           }
         },
+        "additionalProperties": false
+      },
+      "TbTeamRoleProjectCustomTnsEmptyFilter": {
+        "type": "object",
         "additionalProperties": false
       },
       "TbUnadjustedBalance": {

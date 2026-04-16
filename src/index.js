@@ -5,7 +5,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { ListToolsRequestSchema, CallToolRequestSchema } from '@modelcontextprotocol/sdk/types.js';
 import { getToken, getAuthStatus, login, logout, startDeviceLogin } from './auth.js';
 import { tools } from './tool.js';
-import { SERVER_NAME, SERVER_VERSION, API_URL, TOOL_NAME_TO_ENDPOINT_MAP, LOG_PREFIX } from './const.js';
+import { SERVER_NAME, SERVER_VERSION, API_URL, TOOL_NAME_TO_ENDPOINT_MAP, SERVER_INSTRUCTIONS, LOG_PREFIX } from './const.js';
 
 // Handle CLI commands (login, logout, status)
 const command = process.argv[2];
@@ -73,7 +73,10 @@ async function fetchDelete(url, token, etag) {
 }
 
 // Start MCP server
-const server = new Server({ name: SERVER_NAME, version: SERVER_VERSION }, { capabilities: { tools: {} } });
+const server = new Server(
+    { name: SERVER_NAME, version: SERVER_VERSION },
+    { capabilities: { tools: {} }, instructions: SERVER_INSTRUCTIONS }
+);
 
 // List available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => ({
@@ -142,8 +145,15 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         // Build query string
         const params = new URLSearchParams();
         for (const param of queryParams) {
-            if (args?.[param] !== undefined && args?.[param] !== null) {
-                params.append(param, args[param]);
+            const value = args?.[param];
+            if (value !== undefined && value !== null) {
+                if (Array.isArray(value)) {
+                    for (const v of value) {
+                        params.append(param, v);
+                    }
+                } else {
+                    params.append(param, value);
+                }
             }
         }
         const queryString = params.toString() ? '?' + params.toString() : '';

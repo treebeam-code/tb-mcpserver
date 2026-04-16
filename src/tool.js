@@ -94,7 +94,7 @@ export const tools = [
     },
     {
         name: 'search_entities',
-        description: 'List or search entities within a project, optionally filtered by modification date. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list entities within a project. Supports filtering — see server instructions for filter syntax. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -103,10 +103,25 @@ export const tools = [
                     format: 'uuid',
                     description: 'The project ID'
                 },
+                name: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Entity name (text filter, default: [contains])'
+                },
+                number: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Entity number/code (text filter, default: [contains])'
+                },
+                description: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Entity description (text filter, default: [contains])'
+                },
                 since: {
                     type: 'string',
                     format: 'date-time',
-                    description: 'Return only entities modified since this timestamp'
+                    description: 'Only return records modified after this timestamp'
                 },
                 includeDeprecatedItems: {
                     type: 'boolean',
@@ -236,7 +251,7 @@ export const tools = [
     // --- Account Groups ---
     {
         name: 'search_account_groups',
-        description: 'Search/list raw account group records within a project. Use this tool to look up a specific subset of account groups by type. DO NOT use this tool to build financial summaries by account group — use the pivot_trial_balance_by_account_group or pivot_trial_balance_by_fs_group tools instead, which return pre-aggregated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw account group records within a project. Supports filtering — see server instructions for filter syntax. Use this tool to look up a specific subset of account groups by type. DO NOT use this tool to build financial summaries by account group — use the pivot_trial_balance_by_account_group or pivot_trial_balance_by_fs_group tools instead, which return pre-aggregated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -245,9 +260,35 @@ export const tools = [
                     format: 'uuid',
                     description: 'The project ID'
                 },
+                name: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account group name (text filter, default: [contains])'
+                },
+                number: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account group number/code (text filter, default: [contains])'
+                },
+                description: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account group description (text filter, default: [contains])'
+                },
                 accountGroupTypeCode: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account group type code — a (asset), l (liability), q (equity), r (revenue), x (expense) (ID filter, default: [eq])'
+                },
+                since: {
                     type: 'string',
-                    description: 'Filter by account group type code'
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
+                },
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated account groups (default: false)',
+                    default: false
                 },
                 continuationToken: {
                     type: 'string',
@@ -376,6 +417,16 @@ export const tools = [
                     format: 'uuid',
                     description: 'The project ID'
                 },
+                since: {
+                    type: 'string',
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
+                },
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated entity relationship sets (default: false)',
+                    default: false
+                },
                 continuationToken: {
                     type: 'string',
                     description: 'Pagination token returned by a previous call. Pass this to retrieve the next page of results.'
@@ -482,7 +533,7 @@ export const tools = [
     // --- Accounts ---
     {
         name: 'search_accounts',
-        description: 'Search/list raw account records within a project. Use this tool to look up a specific subset of accounts by entity or account group. DO NOT use this tool to build trial balances or financial summaries — use the pivot_trial_balance_* tools instead, which return account-level balances pre-calculated in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw account records within a project. Supports filtering — see server instructions for filter syntax. Use this tool to look up a specific subset of accounts by entity or account group. DO NOT use this tool to build trial balances or financial summaries — use the pivot_trial_balance_* tools instead, which return account-level balances pre-calculated in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -491,15 +542,40 @@ export const tools = [
                     format: 'uuid',
                     description: 'The project ID'
                 },
+                name: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account name (text filter, default: [contains])'
+                },
+                number: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account number/code (text filter, default: [contains])'
+                },
+                description: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Account description (text filter, default: [contains])'
+                },
                 entityId: {
-                    type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by entity ID'
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by entity ID (ID filter, default: [eq])'
                 },
                 accountGroupId: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by account group ID (ID filter, default: [eq])'
+                },
+                since: {
                     type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by account group ID'
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
+                },
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated accounts (default: false)',
+                    default: false
                 },
                 continuationToken: {
                     type: 'string',
@@ -625,7 +701,7 @@ export const tools = [
     // --- Periods ---
     {
         name: 'search_periods',
-        description: 'Search/list accounting periods within a project. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list accounting periods within a project. Supports filtering — see server instructions for filter syntax. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -634,25 +710,50 @@ export const tools = [
                     format: 'uuid',
                     description: 'The project ID'
                 },
-                startDateFrom: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'Filter periods with startDate on or after this date'
+                name: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Period name (text filter, default: [contains])'
                 },
-                startDateTo: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'Filter periods with startDate on or before this date'
+                number: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Period number/code (text filter, default: [contains])'
                 },
-                endDateFrom: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'Filter periods with endDate on or after this date'
+                description: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Period description (text filter, default: [contains])'
                 },
-                endDateTo: {
+                isLocked: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by locked status — "true" or "false" (boolean filter)'
+                },
+                currencyCode: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Currency code, e.g. USD, EUR (ID filter, default: [eq])'
+                },
+                startDate: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by start date in yyyy-MM-dd format (date filter, default: [eq])'
+                },
+                endDate: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by end date in yyyy-MM-dd format (date filter, default: [eq])'
+                },
+                since: {
                     type: 'string',
-                    format: 'date',
-                    description: 'Filter periods with endDate on or before this date'
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
+                },
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated periods (default: false)',
+                    default: false
                 },
                 continuationToken: {
                     type: 'string',
@@ -796,7 +897,7 @@ export const tools = [
     // --- Unadjusted Balances ---
     {
         name: 'search_unadjusted_balances',
-        description: 'Search/list raw unadjusted balance records within a project. Use this tool to look up a specific subset of balance records by period, entity, account, or amount range. DO NOT use this tool to calculate trial balances or summarize financial data — use the pivot_trial_balance_* tools instead, which return pre-calculated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw unadjusted balance records within a project. Supports filtering — see server instructions for filter syntax. Use this tool to look up a specific subset of balance records by period, account, or amount. DO NOT use this tool to calculate trial balances or summarize financial data — use the pivot_trial_balance_* tools instead, which return pre-calculated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -806,27 +907,34 @@ export const tools = [
                     description: 'The project ID'
                 },
                 periodId: {
-                    type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by period ID'
-                },
-                entityId: {
-                    type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by entity ID'
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by period ID (ID filter, default: [eq])'
                 },
                 accountId: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by account ID (ID filter, default: [eq])'
+                },
+                interimPeriodId: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by interim period ID (ID filter, default: [eq])'
+                },
+                amount: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by amount (numeric filter, default: [eq])'
+                },
+                since: {
                     type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by account ID'
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
                 },
-                minAmount: {
-                    type: 'number',
-                    description: 'Filter balances with amount greater than or equal to this value'
-                },
-                maxAmount: {
-                    type: 'number',
-                    description: 'Filter balances with amount less than or equal to this value'
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated unadjusted balances (default: false)',
+                    default: false
                 },
                 continuationToken: {
                     type: 'string',
@@ -936,7 +1044,7 @@ export const tools = [
     // --- Adjustments ---
     {
         name: 'search_adjustments',
-        description: 'Search/list raw adjustment records within a project. Use this tool to look up a specific subset of adjustments by period, type, or amount range. DO NOT use this tool to summarize or analyze adjustment data across periods or accounts — use the pivot_adjustments_* tools instead, which return pre-aggregated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw adjustment records within a project. Supports filtering — see server instructions for filter syntax. Use this tool to look up a specific subset of adjustments by period, type, status, or other criteria. DO NOT use this tool to summarize or analyze adjustment data across periods or accounts — use the pivot_adjustments_* tools instead, which return pre-aggregated totals in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -945,22 +1053,60 @@ export const tools = [
                     format: 'uuid',
                     description: 'The project ID'
                 },
+                name: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Adjustment name (text filter, default: [contains])'
+                },
+                number: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Adjustment number/code (text filter, default: [contains])'
+                },
+                description: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Adjustment description (text filter, default: [contains])'
+                },
                 periodId: {
-                    type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by period ID'
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by period ID (ID filter, default: [eq])'
+                },
+                interimPeriodId: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by interim period ID (ID filter, default: [eq])'
                 },
                 adjustmentTypeId: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by adjustment type ID (ID filter, default: [eq])'
+                },
+                adjustmentStatus: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Adjustment status, e.g. "draft", "posted" (text filter, default: [contains])'
+                },
+                reference: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Reference text (text filter, default: [contains])'
+                },
+                isPreparedByClient: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Whether prepared by client — "true" or "false" (boolean filter)'
+                },
+                since: {
                     type: 'string',
-                    description: 'Filter by adjustment type (e.g. PAJE, TAJE)'
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
                 },
-                minAmount: {
-                    type: 'number',
-                    description: 'Filter adjustments with total amount greater than or equal to this value'
-                },
-                maxAmount: {
-                    type: 'number',
-                    description: 'Filter adjustments with total amount less than or equal to this value'
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated adjustments (default: false)',
+                    default: false
                 },
                 continuationToken: {
                     type: 'string',
@@ -1145,7 +1291,7 @@ export const tools = [
     // --- Adjustment Line Items ---
     {
         name: 'search_adjustment_line_items',
-        description: 'Search/list raw adjustment line item records within a project. Use this tool to look up a specific subset of line items by adjustment, account, or amount range. DO NOT use this tool to analyze adjustment activity across accounts or periods — use the pivot_adjustments_* tools instead, which return pre-joined and pre-aggregated data in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
+        description: 'Search/list raw adjustment line item records within a project. Supports filtering — see server instructions for filter syntax. Use this tool to look up a specific subset of line items by adjustment, account, or amount. DO NOT use this tool to analyze adjustment activity across accounts or periods — use the pivot_adjustments_* tools instead, which return pre-joined and pre-aggregated data in a single response with no pagination. Results are paginated — if a continuationToken is returned, pass it in the next call to retrieve more.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1155,22 +1301,39 @@ export const tools = [
                     description: 'The project ID'
                 },
                 adjustmentId: {
-                    type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by parent adjustment ID'
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by parent adjustment ID (ID filter, default: [eq])'
                 },
                 accountId: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by account ID (ID filter, default: [eq])'
+                },
+                description: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Line item description (text filter, default: [contains])'
+                },
+                reference: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Reference text (text filter, default: [contains])'
+                },
+                amount: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Filter by amount (numeric filter, default: [eq])'
+                },
+                since: {
                     type: 'string',
-                    format: 'uuid',
-                    description: 'Filter by account ID'
+                    format: 'date-time',
+                    description: 'Only return records modified after this timestamp'
                 },
-                minAmount: {
-                    type: 'number',
-                    description: 'Filter line items with amount greater than or equal to this value'
-                },
-                maxAmount: {
-                    type: 'number',
-                    description: 'Filter line items with amount less than or equal to this value'
+                includeDeprecatedItems: {
+                    type: 'boolean',
+                    description: 'Include deprecated adjustment line items (default: false)',
+                    default: false
                 },
                 continuationToken: {
                     type: 'string',
