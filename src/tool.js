@@ -1138,7 +1138,7 @@ export const tools = [
     },
     {
         name: 'create_adjustment',
-        description: 'Create a new adjustment with line items within a project. Line item amounts must sum to zero (debits = credits).',
+        description: 'Create a new adjustment header within a project. To add line items, call create_adjustment_line_item for each line after this returns.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1154,7 +1154,8 @@ export const tools = [
                 },
                 adjustmentTypeId: {
                     type: 'string',
-                    description: 'The adjustment type (e.g. PAJE, TAJE)'
+                    format: 'uuid',
+                    description: 'The ID of the adjustment type (foreign key). Use list_adjustment_types to look up valid IDs.'
                 },
                 number: {
                     type: 'string',
@@ -1168,45 +1169,21 @@ export const tools = [
                     type: 'string',
                     description: 'Adjustment description'
                 },
-                lineItems: {
-                    type: 'array',
-                    description: 'Line items for the adjustment. Amounts must sum to zero (positive = debit, negative = credit). Minimum 2 items required.',
-                    items: {
-                        type: 'object',
-                        properties: {
-                            accountId: {
-                                type: 'string',
-                                format: 'uuid',
-                                description: 'The account ID this line item affects'
-                            },
-                            amount: {
-                                type: 'number',
-                                description: 'Amount (positive = debit, negative = credit)'
-                            },
-                            description: {
-                                type: 'string',
-                                description: 'Description/memo for this line item'
-                            },
-                            reference: {
-                                type: 'string',
-                                description: 'Reference code or identifier'
-                            },
-                            ordinal: {
-                                type: 'integer',
-                                description: 'Sort order (auto-assigned if not provided)'
-                            }
-                        },
-                        required: ['accountId', 'amount']
-                    },
-                    minItems: 2
+                reference: {
+                    type: 'string',
+                    description: 'Reference code or identifier'
+                },
+                isPreparedByClient: {
+                    type: 'boolean',
+                    description: 'Whether this adjustment was prepared by the client'
                 }
             },
-            required: ['collectionId', 'periodId', 'adjustmentTypeId', 'name', 'lineItems']
+            required: ['collectionId', 'periodId', 'adjustmentTypeId', 'name']
         }
     },
     {
         name: 'update_adjustment',
-        description: 'Update an existing adjustment within a project.',
+        description: 'Update an existing adjustment header within a project. Line items are managed separately via the *_adjustment_line_item tools.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1220,6 +1197,20 @@ export const tools = [
                     format: 'uuid',
                     description: 'The adjustment ID'
                 },
+                periodId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The period this adjustment belongs to'
+                },
+                adjustmentTypeId: {
+                    type: 'string',
+                    format: 'uuid',
+                    description: 'The ID of the adjustment type (foreign key). Use list_adjustment_types to look up valid IDs.'
+                },
+                number: {
+                    type: 'string',
+                    description: 'Adjustment number or code'
+                },
                 name: {
                     type: 'string',
                     description: 'Adjustment name'
@@ -1228,37 +1219,13 @@ export const tools = [
                     type: 'string',
                     description: 'Adjustment description'
                 },
-                lineItems: {
-                    type: 'array',
-                    description: 'Updated line items. Amounts must sum to zero. Replaces all existing line items.',
-                    items: {
-                        type: 'object',
-                        properties: {
-                            accountId: {
-                                type: 'string',
-                                format: 'uuid',
-                                description: 'The account ID this line item affects'
-                            },
-                            amount: {
-                                type: 'number',
-                                description: 'Amount (positive = debit, negative = credit)'
-                            },
-                            description: {
-                                type: 'string',
-                                description: 'Description/memo for this line item'
-                            },
-                            reference: {
-                                type: 'string',
-                                description: 'Reference code or identifier'
-                            },
-                            ordinal: {
-                                type: 'integer',
-                                description: 'Sort order (auto-assigned if not provided)'
-                            }
-                        },
-                        required: ['accountId', 'amount']
-                    },
-                    minItems: 2
+                reference: {
+                    type: 'string',
+                    description: 'Reference code or identifier'
+                },
+                isPreparedByClient: {
+                    type: 'boolean',
+                    description: 'Whether this adjustment was prepared by the client'
                 }
             },
             required: ['collectionId', 'id']

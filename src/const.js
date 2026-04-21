@@ -168,14 +168,14 @@ export const TOOL_NAME_TO_ENDPOINT_MAP = {
         method: 'POST',
         pathParams: ['collectionId'],
         queryParams: [],
-        payload: ['collectionId', 'periodId', 'adjustmentTypeId', 'number', 'name', 'description', 'lineItems']
+        payload: ['collectionId', 'periodId', 'adjustmentTypeId', 'number', 'name', 'description', 'reference', 'isPreparedByClient']
     },
     update_adjustment: {
         endpoint: 'c/{collectionId}/adjustments/{id}',
         method: 'POST',
         pathParams: ['collectionId', 'id'],
         queryParams: [],
-        payload: ['collectionId', 'name', 'number', 'description', 'lineItems'],
+        payload: ['collectionId', 'name', 'number', 'description', 'periodId', 'adjustmentTypeId', 'reference', 'isPreparedByClient'],
         merge: true
     },
     delete_adjustment: { endpoint: 'c/{collectionId}/adjustments/{id}', method: 'DELETE', pathParams: ['collectionId', 'id'], queryParams: [], payload: [] },
