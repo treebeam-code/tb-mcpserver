@@ -42,7 +42,7 @@ After installing, you can confirm Node.js is ready:
    ```
    node --version
    ```
-3. You should see something like `v22.0.0` — any number starting with 18 or higher is perfect
+3. You should see something like `v22.0.0` — any number starting with 22 or higher is perfect
 
 If you see a version number, you're all set!
 

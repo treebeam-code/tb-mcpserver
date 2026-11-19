@@ -14,6 +14,11 @@ steps:
     fetchDepth: 0
     persistCredentials: true
 
+  - task: UseNode@1
+    displayName: 'Use Node 26'
+    inputs:
+      version: '26.x'
+
   - task: Bash@3
     displayName: 'Verify tag matches package.json version'
     inputs:
@@ -28,6 +33,24 @@ steps:
           echo "##vso[task.logissue type=error]Tag $TAG does not match package.json version $PKG_VERSION"
           exit 1
         fi
+
+  # Only reviewed code is released: the tagged commit must already be on master
+  - task: Bash@3
+    displayName: 'Verify tagged commit is on master'
+    inputs:
+      targetType: inline
+      script: |
+        set -e
+        git fetch --no-tags origin +refs/heads/master:refs/remotes/origin/master
+        if ! git merge-base --is-ancestor HEAD origin/master; then
+          echo "##vso[task.logissue type=error]Tagged commit $(git rev-parse --short HEAD) is not on master. Tag only commits merged to master through a pull request."
+          exit 1
+        fi
+        echo "Tagged commit $(git rev-parse --short HEAD) is on master"
+
+  # Fail before anything is pushed to GitHub (which triggers the public npm publish)
+  - script: npm audit --audit-level=high --registry=https://registry.npmjs.org/
+    displayName: 'npm audit (fail on high/critical)'
 
   - task: Bash@3
     displayName: 'Squash and push to GitHub'

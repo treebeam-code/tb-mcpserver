@@ -1,0 +1,30 @@
+# Pull request validation. Azure Repos ignores YAML PR triggers, so this pipeline
+# runs through the Build Validation setting in the master branch policy.
+trigger: none
+
+pool:
+  vmImage: ubuntu-latest
+
+strategy:
+  matrix:
+    node22_minimum:
+      nodeVersion: '22.x'
+    node26_build:
+      nodeVersion: '26.x'
+
+steps:
+  - checkout: self
+
+  - task: UseNode@1
+    displayName: 'Use Node $(nodeVersion)'
+    inputs:
+      version: '$(nodeVersion)'
+
+  - script: npm audit --audit-level=high --registry=https://registry.npmjs.org/
+    displayName: 'npm audit (fail on high/critical)'
+
+  - script: npm ci
+    displayName: 'npm ci'
+
+  - script: node scripts/smoke-test.mjs
+    displayName: 'Smoke test (MCP handshake and tool list)'

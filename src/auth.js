@@ -1,8 +1,8 @@
-// treebeam-mcp/src/auth.ts
-import keytar from 'keytar'; // OS keychain access
+// treebeam-mcp/src/auth.js
+import { saveTokens, loadTokens, deleteTokens, storageInfo } from './tokenStore.js';
 import open from 'open'; // Open browser
 import {
-    SERVICE_NAME, ACCOUNT_NAME, IDENTITY_URL, CLIENT_ID, OAUTH_SCOPE,
+    IDENTITY_URL, CLIENT_ID, OAUTH_SCOPE,
     DEVICE_AUTH_ENDPOINT, TOKEN_ENDPOINT, GRANT_TYPE_DEVICE_CODE,
     GRANT_TYPE_REFRESH_TOKEN, TOKEN_EXPIRY_BUFFER_MS,
     DEFAULT_DEVICE_CODE_EXPIRY_S, DEFAULT_POLL_INTERVAL_S,
@@ -138,7 +138,7 @@ async function pollForToken(deviceCode, expiresIn = DEFAULT_DEVICE_CODE_EXPIRY_S
             expires_at: Date.now() + result.expires_in * 1000
         };
 
-        await keytar.setPassword(SERVICE_NAME, ACCOUNT_NAME, JSON.stringify(tokens));
+        await saveTokens(tokens);
         return result.access_token;
     }
 
@@ -147,19 +147,17 @@ async function pollForToken(deviceCode, expiresIn = DEFAULT_DEVICE_CODE_EXPIRY_S
 }
 
 export async function logout() {
-    await keytar.deletePassword(SERVICE_NAME, ACCOUNT_NAME);
+    await deleteTokens();
     console.error('Logged out successfully.');
 }
 
 export async function getToken() {
-    const stored = await keytar.getPassword(SERVICE_NAME, ACCOUNT_NAME);
+    const tokens = await loadTokens();
 
-    if (!stored) {
+    if (!tokens) {
         console.error(`${LOG_PREFIX} getToken: no stored token, triggering login`);
         return await login();
     }
-
-    const tokens = JSON.parse(stored);
 
     // Check if expired (with 5 minute buffer)
     if (Date.now() > tokens.expires_at - TOKEN_EXPIRY_BUFFER_MS) {
@@ -211,22 +209,21 @@ async function refreshToken(refreshTokenValue) {
         expires_at: Date.now() + result.expires_in * 1000
     };
 
-    await keytar.setPassword(SERVICE_NAME, ACCOUNT_NAME, JSON.stringify(tokens));
+    await saveTokens(tokens);
 
     return result.access_token;
 }
 
 export async function getAuthStatus() {
-    const stored = await keytar.getPassword(SERVICE_NAME, ACCOUNT_NAME);
+    const tokens = await loadTokens();
 
-    if (!stored) {
-        return { authenticated: false };
+    if (!tokens) {
+        return { authenticated: false, ...storageInfo() };
     }
-
-    const tokens = JSON.parse(stored);
 
     return {
         authenticated: Date.now() < tokens.expires_at,
-        expiresAt: new Date(tokens.expires_at)
+        expiresAt: new Date(tokens.expires_at),
+        ...storageInfo()
     };
 }

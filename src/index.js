@@ -7,6 +7,8 @@ import { getToken, getAuthStatus, login, logout, startDeviceLogin } from './auth
 import { tools } from './tool.js';
 import { SERVER_NAME, SERVER_VERSION, API_URL, TOOL_NAME_TO_ENDPOINT_MAP, SERVER_INSTRUCTIONS, LOG_PREFIX } from './const.js';
 
+const SESSION_ONLY_NOTE = ' Tokens are stored in the kernel keyring (no Secret Service found), so you will need to sign in again after a reboot or WSL restart.';
+
 // Handle CLI commands (login, logout, status)
 const command = process.argv[2];
 if (command === 'login') {
@@ -18,7 +20,7 @@ if (command === 'login') {
 } else if (command === 'status') {
     const status = await getAuthStatus();
     if (status.authenticated) {
-        console.log(`Authenticated. Token expires at ${status.expiresAt.toISOString()}.`);
+        console.log(`Authenticated. Token expires at ${status.expiresAt.toISOString()}.${status.persistent ? '' : SESSION_ONLY_NOTE}`);
     } else {
         console.log('Not authenticated. Use the login command to sign in.');
     }
@@ -119,7 +121,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         if (name === 'treebeam_auth_status') {
             const status = await getAuthStatus();
             if (status.authenticated) {
-                return { content: [{ type: 'text', text: `Authenticated. Token expires at ${status.expiresAt.toISOString()}.` }] };
+                return { content: [{ type: 'text', text: `Authenticated. Token expires at ${status.expiresAt.toISOString()}.${status.persistent ? '' : SESSION_ONLY_NOTE}` }] };
             }
             return { content: [{ type: 'text', text: 'Not authenticated. Use the treebeam_login tool to sign in.' }] };
         }

@@ -8,19 +8,27 @@ on:
 jobs:
     publish:
         runs-on: ubuntu-latest
+        # Required reviewers and the allowed tag pattern are configured on this environment in GitHub settings
+        environment: tb-publish
         permissions:
             contents: write # Required for creating GitHub Releases
             id-token: write # Required for OIDC trusted publisher + provenance
 
         steps:
-            - uses: actions/checkout@v4
-
-            - uses: actions/setup-node@v4
+            # Actions are pinned to full commit SHAs; tags can be moved, SHAs cannot.
+            # To update: git ls-remote --tags https://github.com/actions/<name>.git
+            - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
               with:
-                  node-version: '24'
+                  persist-credentials: false
 
-            - name: Upgrade npm for OIDC support
-              run: npm install -g npm@latest
+            # Node 26 bundles npm 11.20+, which already supports OIDC trusted publishing (11.5.1+),
+            # so npm is not upgraded separately. npm updates only when Node does.
+            - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+              with:
+                  node-version: '26'
+
+            - name: npm audit (fail on high/critical)
+              run: npm audit --audit-level=high
 
             - run: npm ci
 
@@ -33,4 +41,4 @@ jobs:
             - name: Create GitHub Release
               env:
                   GH_TOKEN: ${{ github.token }}
-              run: gh release create "${{ github.ref_name }}" --generate-notes
+              run: gh release create "${{ github.ref_name }}" --repo "${{ github.repository }}" --generate-notes

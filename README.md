@@ -114,19 +114,13 @@ Run `treebeam-mcp login` (or `npm run login` from source) to re-authenticate. If
 
 ### Keychain access issues
 
-The server uses [keytar](https://github.com/nicktasso/keytar) for OS keychain storage. On Linux, ensure `libsecret` is installed:
+Tokens are stored with [@napi-rs/keyring](https://github.com/Brooooooklyn/keyring-node), which ships prebuilt binaries, so no build tools or extra system packages are needed. Tokens are never written to a plain text file.
 
-```bash
-# Debian/Ubuntu
-sudo apt install libsecret-1-dev
-
-# Fedora
-sudo dnf install libsecret-devel
-```
+On Linux, including WSL, tokens go to the Secret Service (gnome-keyring, KWallet or KeePassXC) when one is running. Without one, the server uses the kernel keyring instead. Those tokens are kept in memory only, so you'll need to sign in again after a reboot or WSL restart. `treebeam-mcp status` says when this applies. To keep tokens across restarts on Linux, install and run a Secret Service, for example `gnome-keyring`.
 
 ### Node.js version
 
-Verify you're running Node.js 18+:
+Verify you're running Node.js 22 or later:
 
 ```bash
 node --version

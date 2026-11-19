@@ -64,5 +64,5 @@ Claude will handle everything from there.
 ## Need Help?
 
 - Official Claude Code documentation: **[docs.anthropic.com/claude-code](https://docs.anthropic.com/en/docs/claude-code/overview)**
-- If Claude Code won't start, make sure Node.js 18 or later is installed (see the [Node.js guide](./Install-Node.md))
+- If Claude Code won't start, make sure Node.js 22 or later is installed (see the [Node.js guide](./Install-Node.md))
 - For other issues, contact your team or visit the Anthropic support page
