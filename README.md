@@ -4,7 +4,7 @@ MCP (Model Context Protocol) server for [TreeBeam](https://www.treebeam.com) —
 
 ## Prerequisites
 
-- **Node.js** 18 or later — [How to install Node.js](docs/Install-Node.md)
+- **Node.js** 22 or later — [How to install Node.js](docs/Install-Node.md)
 - **Git** _(only needed if installing from source)_ — [How to install Git](docs/Install-Git.md)
 - **Claude Code** _(if using as your AI assistant)_ — [How to install Claude Code](docs/Install-Claude-Code.md)
 - A **TreeBeam account** — sign up at [treebeam.com](https://www.treebeam.com)
@@ -29,7 +29,7 @@ npm install
 
 ## Authentication
 
-The server uses OAuth 2.0 device flow for authentication. Tokens are stored securely in your OS keychain (macOS Keychain, Windows Credential Vault, or Linux Secret Service). Once authenticated, tokens are cached and refreshed automatically.
+The server uses OAuth 2.0 device flow for authentication. Tokens are stored securely in your OS keychain (macOS Keychain, Windows Credential Manager, or the Linux Secret Service), never in a plain text file. On Linux without a Secret Service, such as WSL, see [Keychain access issues](#keychain-access-issues). Once authenticated, tokens are cached and refreshed automatically.
 
 ### In your AI assistant (recommended)
 
@@ -51,6 +51,18 @@ treebeam-mcp logout      # Remove stored credentials
 
 ## Client Configuration
 
+### Claude Code
+
+Run this once in a terminal to make TreeBeam available in all your projects:
+
+```bash
+claude mcp add --scope user treebeam -- treebeam-mcp
+```
+
+Use `--scope project` instead to add it to the current project's `.mcp.json` so it's shared with everyone on the project. Run `claude mcp list` to confirm it's connected.
+
+### Claude Desktop and other clients
+
 Add the TreeBeam MCP server to your client's config file. The JSON structure is the same across clients — only the file location differs.
 
 **Config file locations:**
@@ -59,7 +71,6 @@ Add the TreeBeam MCP server to your client's config file. The JSON structure is 
 |--------|------|
 | **Claude Desktop (macOS)** | `~/Library/Application Support/Claude/claude_desktop_config.json` |
 | **Claude Desktop (Windows)** | `%APPDATA%\Claude\claude_desktop_config.json` |
-| **Claude Code** | `~/.claude/settings.json` or project `.mcp.json` |
 
 #### If installed globally via npm:
 
@@ -102,7 +113,7 @@ Once connected, the following tools are available to your AI assistant. Here are
 | `list_organizations` | List all accounting organizations you have access to |
 | `list_projects` | List all projects, optionally filtered by organization ID |
 
-The server provides **47 tools** in total covering full CRUD operations for entities, accounts, account groups, periods, unadjusted balances, adjustments, adjustment line items, and entity relationship sets. Each resource supports `search_*`, `get_*`, `create_*`, `update_*`, and `delete_*` operations. See [`src/tool.js`](src/tool.js) for the complete list.
+The server provides **56 tools** in total covering full CRUD operations for entities, accounts, account groups, periods, unadjusted balances, adjustments, adjustment line items, and entity relationship sets. Each resource supports `search_*`, `get_*`, `create_*`, `update_*`, and `delete_*` operations. There are also `pivot_*` tools for trial balance, adjustment and consolidation summaries, and read-only tools for adjustment types. See [`src/tool.js`](src/tool.js) for the complete list.
 
 Authentication is handled automatically — if your token expires during a session, the server initiates re-authentication via device flow.
 

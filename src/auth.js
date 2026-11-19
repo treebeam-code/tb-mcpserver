@@ -35,9 +35,22 @@ export async function login() {
     return token;
 }
 
-// MCP tool login — returns device code info immediately, polls in background
+// A device login started from a tool call, while it is still waiting for the user
+let pendingLogin = null;
+
+// MCP tool login — returns device code info immediately, polls in background.
+// Repeated calls while a login is pending return the same code instead of opening
+// another browser tab and starting another poller.
 export async function startDeviceLogin() {
+    if (pendingLogin && Date.now() < pendingLogin.expiresAt) {
+        console.error(`${LOG_PREFIX} startDeviceLogin: reusing pending device login`);
+        return pendingLogin.info;
+    }
+
     const info = await requestDeviceCode();
+    const expiresIn = info.expiresIn ?? DEFAULT_DEVICE_CODE_EXPIRY_S;
+    const login = { info, expiresAt: Date.now() + expiresIn * 1000 };
+    pendingLogin = login;
 
     // Open browser automatically
     try {
@@ -47,9 +60,13 @@ export async function startDeviceLogin() {
     }
 
     // Start background polling
-    pollForToken(info.deviceCode, info.expiresIn, info.interval).catch(() => {
-        // Polling failed or timed out — user can retry
-    });
+    pollForToken(info.deviceCode, expiresIn, info.interval ?? DEFAULT_POLL_INTERVAL_S)
+        .catch(() => {
+            // Polling failed or timed out — user can retry
+        })
+        .finally(() => {
+            if (pendingLogin === login) pendingLogin = null;
+        });
 
     return info;
 }
@@ -151,12 +168,14 @@ export async function logout() {
     console.error('Logged out successfully.');
 }
 
+// Returns a valid access token, refreshing it if needed, or null when the user must sign in.
+// Callers start sign-in with startDeviceLogin(); this never blocks waiting for the user.
 export async function getToken() {
     const tokens = await loadTokens();
 
     if (!tokens) {
-        console.error(`${LOG_PREFIX} getToken: no stored token, triggering login`);
-        return await login();
+        console.error(`${LOG_PREFIX} getToken: no stored token, sign-in required`);
+        return null;
     }
 
     // Check if expired (with 5 minute buffer)
@@ -165,8 +184,8 @@ export async function getToken() {
         try {
             return await refreshToken(tokens.refresh_token);
         } catch (error) {
-            console.error(`${LOG_PREFIX} getToken: refresh failed (${error.message}), triggering re-login`);
-            return await login();
+            console.error(`${LOG_PREFIX} getToken: refresh failed (${error.message}), sign-in required`);
+            return null;
         }
     }
 

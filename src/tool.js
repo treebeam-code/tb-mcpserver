@@ -802,6 +802,10 @@ export const tools = [
                     type: 'string',
                     description: 'Period name'
                 },
+                description: {
+                    type: 'string',
+                    description: 'Period description'
+                },
                 startDate: {
                     type: 'string',
                     format: 'date',

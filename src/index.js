@@ -27,10 +27,77 @@ if (command === 'login') {
     process.exit(0);
 }
 
+// Logs only the path: query strings carry filter values (names, amounts) that shouldn't
+// end up in MCP client log files.
+function logPath(url) {
+    try {
+        return new URL(url).pathname;
+    } catch {
+        return '(invalid URL)';
+    }
+}
+
+// Tool result telling the user how to finish signing in
+async function signInRequired(headline) {
+    const info = await startDeviceLogin();
+    return {
+        content: [{
+            type: 'text',
+            text: [
+                headline,
+                '',
+                `Open this URL: ${info.verificationUriComplete}`,
+                '',
+                `Or go to ${info.verificationUri} and enter code: ${info.userCode}`,
+                '',
+                'Complete sign-in in the browser, then retry your request.'
+            ].join('\n')
+        }],
+        isError: true
+    };
+}
+
+// Builds the API URL for a tool call. Throws on missing or unsafe path parameters.
+function buildApiUrl(config, args) {
+    let endpoint = config.endpoint ?? '';
+
+    // Substitute path params into endpoint template. encodeURIComponent leaves dots alone,
+    // and URL parsing resolves "." and ".." segments, which would redirect the request to a
+    // different endpoint, so those values are rejected.
+    for (const param of config.pathParams ?? []) {
+        const value = args?.[param];
+        if (value === undefined || value === null || value === '') {
+            throw new Error(`Missing required parameter: ${param}`);
+        }
+        const text = String(value);
+        if (text === '.' || text === '..') {
+            throw new Error(`Invalid value for ${param}`);
+        }
+        endpoint = endpoint.replace(`{${param}}`, encodeURIComponent(text));
+    }
+
+    // Build query string
+    const params = new URLSearchParams();
+    for (const param of config.queryParams ?? []) {
+        const value = args?.[param];
+        if (value !== undefined && value !== null) {
+            if (Array.isArray(value)) {
+                for (const v of value) {
+                    params.append(param, v);
+                }
+            } else {
+                params.append(param, value);
+            }
+        }
+    }
+    const queryString = params.toString() ? '?' + params.toString() : '';
+    return `${API_URL}/api/v1/${endpoint}${queryString}`;
+}
+
 // Fetch helpers
 
 async function fetchGet(url, token, continuationToken) {
-    console.error(`${LOG_PREFIX} API GET ${url}`);
+    console.error(`${LOG_PREFIX} API GET ${logPath(url)}`);
     const headers = {
         Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
@@ -51,7 +118,7 @@ async function fetchPost(url, token, body, merge = false) {
         const current = await getResponse.json();
         body = { ...current, ...body };
     }
-    console.error(`${LOG_PREFIX} API POST ${url}`);
+    console.error(`${LOG_PREFIX} API POST ${logPath(url)}`);
     return fetch(url, {
         method: 'POST',
         headers: {
@@ -63,7 +130,7 @@ async function fetchPost(url, token, body, merge = false) {
 }
 
 async function fetchDelete(url, token, etag) {
-    console.error(`${LOG_PREFIX} API DELETE ${url}`);
+    console.error(`${LOG_PREFIX} API DELETE ${logPath(url)}`);
     return fetch(url, {
         method: 'DELETE',
         headers: {
@@ -88,7 +155,8 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 // Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
     const { name, arguments: args } = request.params;
-    console.error(`${LOG_PREFIX} Tool call: ${name}`, args ? JSON.stringify(args) : '');
+    // Argument names only: values can contain financial data
+    console.error(`${LOG_PREFIX} Tool call: ${name}`, args ? `(args: ${Object.keys(args).join(', ')})` : '');
 
     try {
         // Auth tools — handle before requiring a token
@@ -126,40 +194,20 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             return { content: [{ type: 'text', text: 'Not authenticated. Use the treebeam_login tool to sign in.' }] };
         }
 
+        // Resolve routing config and validate arguments before touching credentials
+        const config = TOOL_NAME_TO_ENDPOINT_MAP[name];
+        if (!config) {
+            throw new Error(`Unknown tool: ${name}`);
+        }
+        const method = config.method ?? 'GET';
+        const payloadFields = config.payload ?? [];
+        const apiUrl = buildApiUrl(config, args);
+
         // API tools — require a token
         const token = await getToken();
-
-        // Resolve routing config
-        const config = TOOL_NAME_TO_ENDPOINT_MAP[name] ?? {};
-        const method = config.method ?? 'GET';
-        const pathParams = config.pathParams ?? [];
-        const queryParams = config.queryParams ?? [];
-        const payloadFields = config.payload ?? [];
-        let endpoint = config.endpoint ?? '';
-
-        // Substitute path params into endpoint template
-        for (const param of pathParams) {
-            if (args?.[param]) {
-                endpoint = endpoint.replace(`{${param}}`, encodeURIComponent(args[param]));
-            }
+        if (!token) {
+            return await signInRequired('You are not signed in to TreeBeam. Sign-in started automatically.');
         }
-
-        // Build query string
-        const params = new URLSearchParams();
-        for (const param of queryParams) {
-            const value = args?.[param];
-            if (value !== undefined && value !== null) {
-                if (Array.isArray(value)) {
-                    for (const v of value) {
-                        params.append(param, v);
-                    }
-                } else {
-                    params.append(param, value);
-                }
-            }
-        }
-        const queryString = params.toString() ? '?' + params.toString() : '';
-        const apiUrl = `${API_URL}/api/v1/${endpoint}${queryString}`;
 
         // Dispatch to appropriate fetch helper
         let response;
@@ -181,22 +229,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         // Handle auth errors
         if (response.status === 401) {
-            const info = await startDeviceLogin();
-            return {
-                content: [{
-                    type: 'text',
-                    text: [
-                        'Authentication expired. Device flow started automatically.',
-                        '',
-                        `Open this URL: ${info.verificationUriComplete}`,
-                        '',
-                        `Or go to ${info.verificationUri} and enter code: ${info.userCode}`,
-                        '',
-                        'Complete authentication in the browser, then retry your request.'
-                    ].join('\n')
-                }],
-                isError: true
-            };
+            return await signInRequired('Your TreeBeam sign-in has expired. Sign-in started automatically.');
         }
 
         if (!response.ok) {
